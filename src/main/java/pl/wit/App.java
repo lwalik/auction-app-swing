@@ -1,10 +1,13 @@
 package pl.wit;
 
 
-public class App 
+import javax.swing.*;
+
+public class App
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!");
+        AuctionApp app = new AuctionApp();
+        app.run();
     }
 }
