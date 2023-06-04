@@ -4,11 +4,11 @@ import javax.swing.*;
 import java.net.URL;
 
 public class Product {
-    private String name;
-    private double buyNowPrice;
-    private ImageIcon image;
-    private double currPrice;
-    private String currBuyer;
+    private final String name;
+    private final double buyNowPrice;
+    private final ImageIcon image;
+    private final double currPrice;
+    private final String currBuyer;
 
     public Product(String name, double currPrice, double buyNowPrice, String imagePath) {
         this.name = name;
@@ -29,16 +29,8 @@ public class Product {
         return this.name;
     }
 
-    public double getCurrPrice() {
-        return this.currPrice;
-    }
-
     public String getCurrPriceAsString() {
         return Double.toString(this.currPrice);
-    }
-
-    public double getBuyNowPrice() {
-        return this.buyNowPrice;
     }
 
     public String getBuyNowPriceAsString() {

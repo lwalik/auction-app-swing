@@ -3,24 +3,32 @@ package pl.wit;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.sql.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AuctionApp {
-    private JFrame frame = new JFrame("Auction App");
-    private CardLayout cardLayout = new CardLayout();
-    private JPanel cards = new JPanel(cardLayout);
+    private final JFrame frame = new JFrame("Auction App");
+    private final CardLayout cardLayout = new CardLayout();
+    private final JPanel cards = new JPanel(cardLayout);
 
-    private List<String> products = Arrays.asList("Product 1", "Product 2", "Product 3", "Product 4");
+    private final List<Product> products = Arrays.asList(
+            new Product("Product 1", 100.00, 500.00, "/images/pobrane.png"),
+            new Product("Product 2", 85.00, 170.00, "/images/apple-iphone-xs.jpg"),
+            new Product("Product 3", 15.00, 45.00,  "/images/apple-iphone-xs.jpg")
+    );
     public AuctionApp() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800,600);
+        frame.setSize(400,800);
 
         this.generateCards(products);
     }
 
-    private void generateCards(List<String> list) {
+    public void run(){
+        frame.setVisible(true);
+    }
+
+    private void generateCards(List<Product> list) {
         for (int i = 0; i < list.size(); i++) {
             List<JButton> buttons = new ArrayList<>();
             if (i != 0) {
@@ -37,28 +45,41 @@ public class AuctionApp {
             cards.add(card, "Page " + i);
         }
 
-        frame.getContentPane().add(cards, BorderLayout.CENTER);
+        frame.getContentPane().add(cards);
     }
 
-    private JPanel createCard(String message, JButton... buttons) {
-        JPanel card = new JPanel(new BorderLayout());
+    private JPanel createCard(Product product, JButton... buttons) {
+        JPanel card = new JPanel(new GridLayout(3,2));
 
-        JLabel label = new JLabel(message, SwingConstants.CENTER);
-        card.add(label, BorderLayout.CENTER);
+        JLabel image = new JLabel(product.getImage(), SwingConstants.CENTER);
+        JLabel name = new JLabel("Nazwa: " + product.getName(), SwingConstants.CENTER);
+        JLabel buyNowPrice = new JLabel("Cena (Kup Teraz): " + product.getBuyNowPriceAsString(), SwingConstants.CENTER);
+        JLabel currPrice = new JLabel("Aktualna cena (Licytacja): " + product.getCurrPriceAsString(), SwingConstants.CENTER);
+        JLabel currBuyer = new JLabel("Aktualny kupujący: " + product.getCurrBuyer(), SwingConstants.CENTER);
 
-        JPanel buttonPanel = new JPanel();
-        for (JButton button : buttons) {
-            buttonPanel.add(button);
-        }
+        JPanel info = new JPanel(new GridLayout(4,1));
 
-        card.add(buttonPanel, BorderLayout.SOUTH);
+        card.add(image);
+
+        info.add(name);
+        info.add(buyNowPrice);
+        info.add(currPrice);
+        info.add(currBuyer);
+
+        card.add(info);
+
+        card.add(createNavButtons(buttons));
 
         return card;
     }
 
-    public void run(){
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+    private JPanel createNavButtons(JButton... buttons) {
+        JPanel buttonPanel = new JPanel();
+        for (JButton button : buttons) {
+            buttonPanel.add(button);
+        };
+
+        return buttonPanel;
     }
 
     AbstractAction nextAction = new AbstractAction("Next") {
