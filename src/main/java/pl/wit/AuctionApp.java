@@ -3,16 +3,22 @@ package pl.wit;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.*;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class AuctionApp {
     private final JFrame frame = new JFrame("Auction App");
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel cards = new JPanel(cardLayout);
+    BufferedReader in;
+//    private Map<Integer, Product> products;
 
-    private final List<Product> products = Arrays.asList(
+
+    private List<Product> products = Arrays.asList(
             new Product("Product 1", 100.00, 500.00, "/images/pobrane.png"),
             new Product("Product 2", 85.00, 170.00, "/images/apple-iphone-xs.jpg"),
             new Product("Product 3", 15.00, 45.00,  "/images/apple-iphone-xs.jpg")
@@ -24,9 +30,34 @@ public class AuctionApp {
         this.generateCards(products);
     }
 
+    public static void main(String[] args) throws Exception {
+        AuctionApp client = new AuctionApp();
+        client.run2();
+    }
+
     public void run(){
         frame.setVisible(true);
     }
+
+    public void run2() throws IOException, ClassNotFoundException {
+        Socket socket = new Socket("localhost", 9001);
+        ObjectInputStream inObject = new ObjectInputStream(socket.getInputStream());
+        in = new BufferedReader(new InputStreamReader(
+                socket.getInputStream()));
+
+//        Map<Integer, Product> products = (Map<Integer, Product>) inObject.readObject();
+//
+//        for (Map.Entry<Integer, Product> entry : products.entrySet()) {
+//            int key = entry.getKey();
+//            Product value = entry.getValue();
+//            System.out.println("Key: " + key + ", Value: " + value.getName());
+//        }
+
+        while (true) {
+            System.out.println("in: " + in.readLine());
+        }
+    }
+
 
     private void generateCards(List<Product> list) {
         for (int i = 0; i < list.size(); i++) {
