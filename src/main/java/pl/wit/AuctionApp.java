@@ -13,17 +13,11 @@ public class AuctionApp {
     private final JFrame frame = new JFrame("Auction App");
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel cards = new JPanel(cardLayout);
-    BufferedReader in;
     private Map<Integer, Product> products = new HashMap<>();
     private Socket socket;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
-//    private List<Product> products = Arrays.asList(
-//            new Product("Product 1", 100.00, 500.00, "/images/pobrane.png"),
-//            new Product("Product 2", 85.00, 170.00, "/images/apple-iphone-xs.jpg"),
-//            new Product("Product 3", 15.00, 45.00,  "/images/apple-iphone-xs.jpg")
-//    );
     public AuctionApp() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400,800);

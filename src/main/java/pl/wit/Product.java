@@ -7,11 +7,10 @@ import java.net.URL;
 public class Product implements Serializable {
     private final String name;
     private final double buyNowPrice;
-    private final ImageIcon image;
     private final double currPrice;
     private final String currBuyer;
-    private static final long serialVersionUID = -6024934201418331673L;
-    private String imagePath;
+    private static final long serialVersionUID = -1L;
+    private final String imagePath;
 
     public Product(String name, double currPrice, double buyNowPrice, String imagePath) {
         this.name = name;
@@ -22,10 +21,8 @@ public class Product implements Serializable {
         URL url = this.getClass().getResource(imagePath);
 
         if (url != null) {
-            this.image = new ImageIcon(url);
             this.imagePath = imagePath;
         } else {
-            this.image = new ImageIcon("/images/pobrane.png");
             this.imagePath = "/images/pobrane.png";
         }
     }
@@ -43,11 +40,13 @@ public class Product implements Serializable {
     }
 
     public ImageIcon getImage() {
-        return this.image;
-    }
+        URL url = this.getClass().getResource(imagePath);
 
-    public String getPathImage() {
-        return this.imagePath;
+        if (url != null) {
+            return new ImageIcon(url);
+        } else {
+            return new ImageIcon("/images/pobrane.png");
+        }
     }
 
     public String getCurrBuyer() {
