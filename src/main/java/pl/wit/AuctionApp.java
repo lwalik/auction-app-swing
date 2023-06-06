@@ -99,6 +99,7 @@ public class AuctionApp {
 
 
     private void generateCards(Map<Integer, Product> list) {
+        cards.removeAll();
         int idx = 0;
         for (Map.Entry<Integer, Product> entry: list.entrySet()) {
             System.out.println("Produkt: " + entry.getValue().getName());
@@ -116,11 +117,10 @@ public class AuctionApp {
                     : this.createCard(entry.getValue(), buttons.get(0));
             cards.add(card, "Page " + idx);
             idx++;
-
         }
 
-
-
+        cards.revalidate();
+        cards.repaint();
 
         frame.getContentPane().add(cards);
     }
@@ -128,7 +128,7 @@ public class AuctionApp {
     private JPanel createCard(Product product, JButton... buttons) {
         JPanel card = new JPanel(new GridLayout(3,2));
 
-//        JLabel image = new JLabel(product.getImage(), SwingConstants.CENTER);
+        JLabel image = new JLabel(product.getImage(), SwingConstants.CENTER);
         JLabel name = new JLabel("Nazwa: " + product.getName(), SwingConstants.CENTER);
         JLabel buyNowPrice = new JLabel("Cena (Kup Teraz): " + product.getBuyNowPriceAsString(), SwingConstants.CENTER);
         JLabel currPrice = new JLabel("Aktualna cena (Licytacja): " + product.getCurrPriceAsString(), SwingConstants.CENTER);
@@ -136,7 +136,7 @@ public class AuctionApp {
 
         JPanel info = new JPanel(new GridLayout(4,1));
 
-//        card.add(image);
+        card.add(image);
 
         info.add(name);
         info.add(buyNowPrice);
