@@ -21,7 +21,7 @@ public class AuctionApp {
     public static void main(String[] args) throws Exception {
         AuctionApp client = new AuctionApp();
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        client.frame.setSize(400, 800);
+        client.frame.setSize(300, 700);
         client.run();
     }
 
@@ -80,7 +80,7 @@ public class AuctionApp {
     }
 
     private JPanel createCard(Product product, JPanel navPanel) {
-        JPanel card = new JPanel(new GridLayout(3, 2));
+        JPanel card = new JPanel(new GridLayout(3, 1));
 
         JLabel image = new JLabel(product.getImage(), SwingConstants.CENTER);
         JLabel name = new JLabel("Nazwa: " + product.getName(), SwingConstants.CENTER);
@@ -88,20 +88,35 @@ public class AuctionApp {
         JLabel currPrice = new JLabel("Aktualna cena (Licytacja): " + product.getCurrPriceAsString(), SwingConstants.CENTER);
         JLabel currBuyer = new JLabel("Aktualny kupujący: " + product.getCurrBuyer(), SwingConstants.CENTER);
 
-        JPanel info = new JPanel(new GridLayout(4, 1));
 
-        card.add(image);
+        JPanel info = new JPanel(new GridLayout(4, 1));
+        JPanel imagePanel = new JPanel();
+        imagePanel.add(image);
+
+        JPanel buttonsPanel = new JPanel(new GridLayout(2, 1));
+
 
         info.add(name);
         info.add(buyNowPrice);
         info.add(currPrice);
         info.add(currBuyer);
 
-        card.add(info);
+        buttonsPanel.add(createAuctionButtonsPanel());
+        buttonsPanel.add(navPanel);
 
-        card.add(navPanel);
+        card.add(imagePanel);
+        card.add(info);
+        card.add(buttonsPanel);
+
 
         return card;
+    }
+
+    private JPanel createAuctionButtonsPanel() {
+        Set<JButton> auctionButtons = new HashSet<JButton>();
+        auctionButtons.add(new JButton(bidAction));
+        auctionButtons.add(new JButton(buyNowAction));
+        return createButtonsPanel(auctionButtons.toArray(new JButton[0]));
     }
 
     private JPanel createButtonsPanel(JButton... buttons) {
@@ -113,6 +128,7 @@ public class AuctionApp {
 
         return buttonPanel;
     }
+
 
     private Set<JButton> createNavButtons(int idx, int size) {
         Set<JButton> buttons = new HashSet<JButton>();
@@ -154,6 +170,13 @@ public class AuctionApp {
         @Override
         public void actionPerformed(ActionEvent e) {
             out.println("BUY_NOW");
+        }
+    };
+
+    AbstractAction bidAction = new AbstractAction("Bid") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            out.println("BID");
         }
     };
 }
