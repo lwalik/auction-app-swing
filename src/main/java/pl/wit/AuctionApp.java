@@ -3,10 +3,9 @@ package pl.wit;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.*;
 import java.util.List;
@@ -63,18 +62,13 @@ public class AuctionApp {
         int idx = 0;
         for (Map.Entry<Integer, Product> entry : list.entrySet()) {
             System.out.println("Produkt: " + entry.getValue().getName());
-            List<JButton> buttons = new ArrayList<>();
-            if (idx != 0) {
-                buttons.add(new JButton(backAction));
-            }
 
-            if (idx != list.size() - 1) {
-                buttons.add(new JButton(nextAction));
-            }
+            Set<JButton> navButtons = createNavButtons(idx, list.size());
+            JPanel navPanel = createButtonsPanel(navButtons.toArray(new JButton[0]));
 
-            JPanel card = buttons.size() > 1
-                    ? this.createCard(entry.getValue(), buttons.get(0), buttons.get(1))
-                    : this.createCard(entry.getValue(), buttons.get(0));
+
+            JPanel card = this.createCard(entry.getValue(), navPanel);
+
             cards.add(card, "Page " + idx);
             idx++;
         }
@@ -85,7 +79,7 @@ public class AuctionApp {
         frame.getContentPane().add(cards);
     }
 
-    private JPanel createCard(Product product, JButton... buttons) {
+    private JPanel createCard(Product product, JPanel navPanel) {
         JPanel card = new JPanel(new GridLayout(3, 2));
 
         JLabel image = new JLabel(product.getImage(), SwingConstants.CENTER);
@@ -105,12 +99,12 @@ public class AuctionApp {
 
         card.add(info);
 
-        card.add(createNavButtons(buttons));
+        card.add(navPanel);
 
         return card;
     }
 
-    private JPanel createNavButtons(JButton... buttons) {
+    private JPanel createButtonsPanel(JButton... buttons) {
         JPanel buttonPanel = new JPanel();
         for (JButton button : buttons) {
             buttonPanel.add(button);
@@ -118,6 +112,19 @@ public class AuctionApp {
         ;
 
         return buttonPanel;
+    }
+
+    private Set<JButton> createNavButtons(int idx, int size) {
+        Set<JButton> buttons = new HashSet<JButton>();
+        if (idx != 0) {
+            buttons.add(new JButton(backAction));
+        }
+
+        if (idx != size - 1) {
+            buttons.add(new JButton(nextAction));
+        }
+
+        return buttons;
     }
 
     private String getName() {
