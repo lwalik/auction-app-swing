@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
@@ -14,49 +16,30 @@ public class AuctionApp {
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel cards = new JPanel(cardLayout);
     private Map<Integer, Product> products = new HashMap<>();
-    private Socket socket;
-    private ObjectOutputStream outputStream;
+    private PrintWriter out;
     private ObjectInputStream inputStream;
-
-    public AuctionApp() {
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400,800);
-    }
 
     public static void main(String[] args) throws Exception {
         AuctionApp client = new AuctionApp();
-        client.connect();
+        client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        client.frame.setSize(400, 800);
         client.run();
     }
 
-    public void run(){
-        this.sendRequest("GET_ALL");
+    public void run() throws IOException {
+        Socket socket = new Socket("localhost", 9001);
+        out = new PrintWriter(socket.getOutputStream(), true);
+        inputStream = new ObjectInputStream(socket.getInputStream());
+
+        out.println(getName());
+        System.out.println("Connected to server.");
+
         while (true) {
             if (products != null && this.updateProducts()) {
                 this.generateCards(products);
                 frame.setVisible(true);
             }
-        }
-    }
 
-
-    public void connect() {
-        try {
-            socket = new Socket("localhost", 9001);
-            outputStream = new ObjectOutputStream(socket.getOutputStream());
-            inputStream = new ObjectInputStream(socket.getInputStream());
-            System.out.println("Connected to server.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendRequest(String request) {
-        try {
-            outputStream.writeObject(request);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -75,27 +58,10 @@ public class AuctionApp {
         return false;
     }
 
-
-//    public void disconnect() {
-//        try {
-//            if (outputStream != null)
-//                outputStream.close();
-//            if (inputStream != null)
-//                inputStream.close();
-//            if (socket != null)
-//                socket.close();
-//            System.out.println("Disconnected from server.");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-
     private void generateCards(Map<Integer, Product> list) {
         cards.removeAll();
         int idx = 0;
-        for (Map.Entry<Integer, Product> entry: list.entrySet()) {
+        for (Map.Entry<Integer, Product> entry : list.entrySet()) {
             System.out.println("Produkt: " + entry.getValue().getName());
             List<JButton> buttons = new ArrayList<>();
             if (idx != 0) {
@@ -120,7 +86,7 @@ public class AuctionApp {
     }
 
     private JPanel createCard(Product product, JButton... buttons) {
-        JPanel card = new JPanel(new GridLayout(3,2));
+        JPanel card = new JPanel(new GridLayout(3, 2));
 
         JLabel image = new JLabel(product.getImage(), SwingConstants.CENTER);
         JLabel name = new JLabel("Nazwa: " + product.getName(), SwingConstants.CENTER);
@@ -128,7 +94,7 @@ public class AuctionApp {
         JLabel currPrice = new JLabel("Aktualna cena (Licytacja): " + product.getCurrPriceAsString(), SwingConstants.CENTER);
         JLabel currBuyer = new JLabel("Aktualny kupujący: " + product.getCurrBuyer(), SwingConstants.CENTER);
 
-        JPanel info = new JPanel(new GridLayout(4,1));
+        JPanel info = new JPanel(new GridLayout(4, 1));
 
         card.add(image);
 
@@ -148,9 +114,18 @@ public class AuctionApp {
         JPanel buttonPanel = new JPanel();
         for (JButton button : buttons) {
             buttonPanel.add(button);
-        };
+        }
+        ;
 
         return buttonPanel;
+    }
+
+    private String getName() {
+        return JOptionPane.showInputDialog(
+                frame,
+                "Choose a screen name:",
+                "Screen name selection",
+                JOptionPane.PLAIN_MESSAGE);
     }
 
     AbstractAction nextAction = new AbstractAction("Next") {
@@ -164,7 +139,14 @@ public class AuctionApp {
         @Override
         public void actionPerformed(ActionEvent e) {
             cardLayout.previous(cards);
+            out.println("accepted");
         }
     };
 
+    AbstractAction buyNowAction = new AbstractAction("Buy Now") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            out.println("BUY_NOW");
+        }
+    };
 }
