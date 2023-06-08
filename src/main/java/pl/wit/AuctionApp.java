@@ -44,17 +44,18 @@ public class AuctionApp {
                 if (response.getStatusCode() == StatusCode.UPDATED.getCode()) {
                     products.clear();
                     products.putAll(response.getProducts());
-                    System.out.println("Aktualizacja: " + products);
+                    System.out.println("Updating....");
                 }
 
                 if (response.getStatusCode() == StatusCode.OK.getCode()) {
                     products.clear();
                     products.putAll(response.getProducts());
-                    System.out.println("Pierwszy raz: " + products);
+                    System.out.println("Data provided!");
                 }
             } catch (ClassNotFoundException e) {
                 System.out.println(e);
             } finally {
+                System.out.println("Data: " + products);
                 this.generateCards(products);
                 frame.setVisible(true);
             }
@@ -81,8 +82,6 @@ public class AuctionApp {
         cards.removeAll();
         int idx = 0;
         for (Map.Entry<Integer, Product> entry : list.entrySet()) {
-            System.out.println("Produkt: " + entry.getValue().getName());
-
             Set<JButton> navButtons = createNavButtons(idx, list.size());
             JPanel navPanel = createButtonsPanel(navButtons.toArray(new JButton[0]));
 
@@ -165,8 +164,8 @@ public class AuctionApp {
     private String getName() {
         return JOptionPane.showInputDialog(
                 frame,
-                "Choose a screen name:",
-                "Screen name selection",
+                "Enter name:",
+                "Login",
                 JOptionPane.PLAIN_MESSAGE);
     }
 
@@ -189,13 +188,10 @@ public class AuctionApp {
         @Override
         public void actionPerformed(ActionEvent e) {
             out.println("BUY_NOW");
-            out.println("Test");
         }
     };
 
     private AbstractAction createBidAction(Product product) {
-        System.out.println("Produkty: " + product.getName() + " currPrice: " + product.getCurrPrice());
-        System.out.println("------------------------------------");
         double diff = product.getBuyNowPrice() - product.getCurrPrice();
         double offer = diff >= 20 ? product.getCurrPrice() + 20 : product.getBuyNowPrice();
         String label = "Bid " + offer;
