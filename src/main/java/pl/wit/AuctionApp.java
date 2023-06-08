@@ -198,7 +198,7 @@ public class AuctionApp {
         System.out.println("------------------------------------");
         double diff = product.getBuyNowPrice() - product.getCurrPrice();
         double offer = diff >= 20 ? product.getCurrPrice() + 20 : product.getBuyNowPrice();
-        String label = String.valueOf("Bid " + offer);
+        String label = "Bid " + offer;
         return new AbstractAction(label) {
             {
                 setEnabled(offer != product.getBuyNowPrice());
