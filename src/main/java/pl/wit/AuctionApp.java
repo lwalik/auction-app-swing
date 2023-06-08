@@ -21,11 +21,12 @@ public class AuctionApp {
     private PrintWriter out;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+    private String userName = "";
 
     public static void main(String[] args) throws Exception {
         AuctionApp client = new AuctionApp();
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        client.frame.setSize(300, 700);
+        client.frame.setSize(400, 700);
         client.run();
     }
 
@@ -51,6 +52,7 @@ public class AuctionApp {
                     products.clear();
                     products.putAll(response.getProducts());
                     System.out.println("Data provided!");
+                    frame.setTitle("Auction App " + response.getUserName());
                 }
             } catch (ClassNotFoundException e) {
                 System.out.println(e);
@@ -88,7 +90,7 @@ public class AuctionApp {
 
             JPanel card = this.createCard(entry.getValue(), navPanel);
 
-            cards.add(card, "Page " + idx);
+            cards.add(card);
             idx++;
         }
 
