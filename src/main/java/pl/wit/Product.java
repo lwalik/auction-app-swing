@@ -3,6 +3,7 @@ package pl.wit;
 import javax.swing.*;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Objects;
 
 public class Product implements Serializable {
     private final String name;
@@ -25,7 +26,7 @@ public class Product implements Serializable {
         if (url != null) {
             this.imagePath = imagePath;
         } else {
-            this.imagePath = "/images/pobrane.png";
+            this.imagePath = "/images/placeholder.png";
         }
     }
 
@@ -44,10 +45,10 @@ public class Product implements Serializable {
     public ImageIcon getImage() {
         URL url = this.getClass().getResource(imagePath);
 
-        if (url != null) {
+        if (url != null && imagePath.startsWith("/images/")) {
             return new ImageIcon(url);
         } else {
-            return new ImageIcon("/images/pobrane.png");
+            return new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/images/placeholder.png")));
         }
     }
 
