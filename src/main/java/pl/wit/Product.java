@@ -70,4 +70,8 @@ public class Product implements Serializable {
     public double getBuyNowPrice() {
         return this.buyNowPrice;
     }
+
+    public void buy() {
+        this.currPrice = this.buyNowPrice;
+    }
 }
