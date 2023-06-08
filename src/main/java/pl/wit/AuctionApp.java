@@ -5,10 +5,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.*;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class AuctionApp {
     private final JFrame frame = new JFrame("Auction App");
@@ -17,6 +20,7 @@ public class AuctionApp {
     private Map<Integer, Product> products = new HashMap<>();
     private PrintWriter out;
     private ObjectInputStream inputStream;
+    private ObjectOutputStream outputStream;
 
     public static void main(String[] args) throws Exception {
         AuctionApp client = new AuctionApp();
@@ -29,25 +33,40 @@ public class AuctionApp {
         Socket socket = new Socket("localhost", 9001);
         out = new PrintWriter(socket.getOutputStream(), true);
         inputStream = new ObjectInputStream(socket.getInputStream());
+        outputStream = new ObjectOutputStream(socket.getOutputStream());
 
         out.println(getName());
         System.out.println("Connected to server.");
 
         while (true) {
-            if (products != null && this.updateProducts()) {
+            try {
+                Response response = (Response) inputStream.readObject();
+                if (response.getStatusCode() == StatusCode.UPDATED.getCode()) {
+                    products.clear();
+                    products.putAll(response.getProducts());
+                    System.out.println("Aktualizacja: " + products);
+                }
+
+                if (response.getStatusCode() == StatusCode.OK.getCode()) {
+                    products.clear();
+                    products.putAll(response.getProducts());
+                    System.out.println("Pierwszy raz: " + products);
+                }
+            } catch (ClassNotFoundException e) {
+                System.out.println(e);
+            } finally {
                 this.generateCards(products);
                 frame.setVisible(true);
             }
-
         }
     }
 
     public boolean updateProducts() {
         try {
-            Map<Integer, Product> response = (Map<Integer, Product>) inputStream.readObject();
-            if (!products.equals(response)) {
-                products = response;
-                System.out.println("Aktualizacja: " + products);
+            Response response = (Response) inputStream.readObject();
+            if (response.getStatusCode() == StatusCode.UPDATED.getCode()) {
+                products = response.getProducts();
+
                 return true;
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -56,6 +75,7 @@ public class AuctionApp {
 
         return false;
     }
+
 
     private void generateCards(Map<Integer, Product> list) {
         cards.removeAll();
@@ -101,7 +121,7 @@ public class AuctionApp {
         info.add(currPrice);
         info.add(currBuyer);
 
-        buttonsPanel.add(createAuctionButtonsPanel());
+        buttonsPanel.add(createAuctionButtonsPanel(product));
         buttonsPanel.add(navPanel);
 
         card.add(imagePanel);
@@ -112,9 +132,9 @@ public class AuctionApp {
         return card;
     }
 
-    private JPanel createAuctionButtonsPanel() {
-        Set<JButton> auctionButtons = new HashSet<JButton>();
-        auctionButtons.add(new JButton(bidAction));
+    private JPanel createAuctionButtonsPanel(Product product) {
+        Set<JButton> auctionButtons = new HashSet<>();
+        auctionButtons.add(new JButton(createBidAction(product)));
         auctionButtons.add(new JButton(buyNowAction));
         return createButtonsPanel(auctionButtons.toArray(new JButton[0]));
     }
@@ -124,14 +144,13 @@ public class AuctionApp {
         for (JButton button : buttons) {
             buttonPanel.add(button);
         }
-        ;
 
         return buttonPanel;
     }
 
 
     private Set<JButton> createNavButtons(int idx, int size) {
-        Set<JButton> buttons = new HashSet<JButton>();
+        Set<JButton> buttons = new HashSet<>();
         if (idx != 0) {
             buttons.add(new JButton(backAction));
         }
@@ -158,11 +177,11 @@ public class AuctionApp {
         }
     };
 
+
     AbstractAction backAction = new AbstractAction("Back") {
         @Override
         public void actionPerformed(ActionEvent e) {
             cardLayout.previous(cards);
-            out.println("accepted");
         }
     };
 
@@ -170,13 +189,31 @@ public class AuctionApp {
         @Override
         public void actionPerformed(ActionEvent e) {
             out.println("BUY_NOW");
+            out.println("Test");
         }
     };
 
-    AbstractAction bidAction = new AbstractAction("Bid") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            out.println("BID");
-        }
-    };
+    private AbstractAction createBidAction(Product product) {
+        System.out.println("Produkty: " + product.getName() + " currPrice: " + product.getCurrPrice());
+        System.out.println("------------------------------------");
+        double diff = product.getBuyNowPrice() - product.getCurrPrice();
+        double offer = diff >= 20 ? product.getCurrPrice() + 20 : product.getBuyNowPrice();
+        String label = String.valueOf("Bid " + offer);
+        return new AbstractAction(label) {
+            {
+                setEnabled(offer != product.getBuyNowPrice());
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                product.setCurrPrice(offer);
+                Request request = new Request("POST", product, "BID");
+                try {
+                    outputStream.writeObject(request);
+                } catch (IOException ex) {
+                    System.out.println(ex);
+                }
+            }
+        };
+    }
 }

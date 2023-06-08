@@ -7,12 +7,14 @@ import java.net.URL;
 public class Product implements Serializable {
     private final String name;
     private final double buyNowPrice;
-    private final double currPrice;
+    private double currPrice;
     private final String currBuyer;
     private static final long serialVersionUID = -1L;
     private final String imagePath;
+    private final int id;
 
-    public Product(String name, double currPrice, double buyNowPrice, String imagePath) {
+    public Product(int id, String name, double currPrice, double buyNowPrice, String imagePath) {
+        this.id = id;
         this.name = name;
         this.currPrice = currPrice;
         this.buyNowPrice = buyNowPrice;
@@ -53,4 +55,19 @@ public class Product implements Serializable {
         return this.currBuyer;
     }
 
+    public double getCurrPrice() {
+        return this.currPrice;
+    }
+
+    public void setCurrPrice(Double value) {
+        this.currPrice = value;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public double getBuyNowPrice() {
+        return this.buyNowPrice;
+    }
 }
