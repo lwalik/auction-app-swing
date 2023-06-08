@@ -64,8 +64,8 @@ public class AuctionApp {
         cards.removeAll();
         int idx = 0;
         for (Map.Entry<Integer, Product> entry : list.entrySet()) {
-            Set<JButton> navButtons = createNavButtons(idx, list.size());
-            JPanel navPanel = createButtonsPanel(navButtons.toArray(new JButton[0]));
+            Map<Integer, JButton> navButtons = createNavButtons(idx, list.size());
+            JPanel navPanel = createButtonsPanel(navButtons);
 
 
             JPanel card = this.createCard(entry.getValue(), navPanel);
@@ -114,15 +114,16 @@ public class AuctionApp {
     }
 
     private JPanel createAuctionButtonsPanel(Product product) {
-        Set<JButton> auctionButtons = new HashSet<>();
-        auctionButtons.add(new JButton(createBidAction(product)));
-        auctionButtons.add(new JButton(createBuyNowAction(product)));
-        return createButtonsPanel(auctionButtons.toArray(new JButton[0]));
+        Map<Integer, JButton> auctionButtons = new HashMap<>();
+        auctionButtons.put(1, new JButton(createBidAction(product)));
+        auctionButtons.put(2, new JButton(createBuyNowAction(product)));
+        return createButtonsPanel(auctionButtons);
     }
 
-    private JPanel createButtonsPanel(JButton... buttons) {
+    private JPanel createButtonsPanel(Map<Integer, JButton> buttons) {
         JPanel buttonPanel = new JPanel();
-        for (JButton button : buttons) {
+        for (Map.Entry<Integer, JButton> entry : buttons.entrySet()) {
+            JButton button = entry.getValue();
             buttonPanel.add(button);
         }
 
@@ -130,14 +131,16 @@ public class AuctionApp {
     }
 
 
-    private Set<JButton> createNavButtons(int idx, int size) {
-        Set<JButton> buttons = new HashSet<>();
+    private Map<Integer, JButton> createNavButtons(int idx, int size) {
+        Map<Integer, JButton> buttons = new HashMap<>();
+        int i = 1;
         if (idx != 0) {
-            buttons.add(new JButton(backAction));
+            buttons.put(i, new JButton(backAction));
+            i++;
         }
 
         if (idx != size - 1) {
-            buttons.add(new JButton(nextAction));
+            buttons.put(i, new JButton(nextAction));
         }
 
         return buttons;
