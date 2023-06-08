@@ -18,7 +18,7 @@ public class Product implements Serializable {
         this.name = name;
         this.currPrice = currPrice;
         this.buyNowPrice = buyNowPrice;
-        this.currBuyer = "Jakiś chuj";
+        this.currBuyer = "";
 
         URL url = this.getClass().getResource(imagePath);
 
