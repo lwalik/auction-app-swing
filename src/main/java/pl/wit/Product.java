@@ -63,10 +63,6 @@ public class Product implements Serializable {
         this.currPrice = value;
     }
 
-    public int getId() {
-        return this.id;
-    }
-
     public double getBuyNowPrice() {
         return this.buyNowPrice;
     }

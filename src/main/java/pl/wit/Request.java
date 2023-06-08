@@ -14,16 +14,4 @@ public class Request implements Serializable {
         this.product = product;
         this.message = message;
     }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }

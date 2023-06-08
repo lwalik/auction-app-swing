@@ -17,9 +17,7 @@ public class AuctionApp {
     private final JFrame frame = new JFrame("Auction App");
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel cards = new JPanel(cardLayout);
-    private Map<Integer, Product> products = new HashMap<>();
-    private PrintWriter out;
-    private ObjectInputStream inputStream;
+    private final Map<Integer, Product> products = new HashMap<>();
     private ObjectOutputStream outputStream;
 
     public static void main(String[] args) throws Exception {
@@ -31,8 +29,8 @@ public class AuctionApp {
 
     public void run() throws IOException {
         Socket socket = new Socket("localhost", 9001);
-        out = new PrintWriter(socket.getOutputStream(), true);
-        inputStream = new ObjectInputStream(socket.getInputStream());
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
         outputStream = new ObjectOutputStream(socket.getOutputStream());
 
         out.println(getName());
@@ -165,13 +163,6 @@ public class AuctionApp {
         @Override
         public void actionPerformed(ActionEvent e) {
             cardLayout.previous(cards);
-        }
-    };
-
-    AbstractAction buyNowAction = new AbstractAction("Buy Now") {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            out.println("BUY_NOW");
         }
     };
 
