@@ -1,27 +1,32 @@
 package pl.wit;
 
 import javax.swing.*;
+import java.io.Serializable;
 import java.net.URL;
+import java.util.Objects;
 
-public class Product {
+public class Product implements Serializable {
     private final String name;
     private final double buyNowPrice;
-    private final ImageIcon image;
-    private final double currPrice;
+    private double currPrice;
     private final String currBuyer;
+    private static final long serialVersionUID = -1L;
+    private final String imagePath;
+    private final int id;
 
-    public Product(String name, double currPrice, double buyNowPrice, String imagePath) {
+    public Product(int id, String name, double currPrice, double buyNowPrice, String imagePath) {
+        this.id = id;
         this.name = name;
         this.currPrice = currPrice;
         this.buyNowPrice = buyNowPrice;
-        this.currBuyer = "Jakiś chuj";
+        this.currBuyer = "";
 
         URL url = this.getClass().getResource(imagePath);
 
         if (url != null) {
-            this.image = new ImageIcon(url);
+            this.imagePath = imagePath;
         } else {
-            this.image = new ImageIcon("/images/pobrane.png");
+            this.imagePath = "/images/placeholder.png";
         }
     }
 
@@ -38,11 +43,32 @@ public class Product {
     }
 
     public ImageIcon getImage() {
-        return this.image;
+        URL url = this.getClass().getResource(imagePath);
+
+        if (url != null && imagePath.startsWith("/images/")) {
+            return new ImageIcon(url);
+        } else {
+            return new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/images/placeholder.png")));
+        }
     }
 
     public String getCurrBuyer() {
         return this.currBuyer;
     }
 
+    public double getCurrPrice() {
+        return this.currPrice;
+    }
+
+    public void setCurrPrice(Double value) {
+        this.currPrice = value;
+    }
+
+    public double getBuyNowPrice() {
+        return this.buyNowPrice;
+    }
+
+    public void buy() {
+        this.currPrice = this.buyNowPrice;
+    }
 }
